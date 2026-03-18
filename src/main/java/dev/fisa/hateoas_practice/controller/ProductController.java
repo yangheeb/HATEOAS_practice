@@ -11,12 +11,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Links;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,7 +41,7 @@ public class ProductController {
 
     // 전체 조회 (페이징 + 필터)
     @GetMapping
-    public ResponseEntity<CollectionModel<ProductModel>> getProducts(
+    public ResponseEntity<Map<String, Object>> getProducts(
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -49,21 +52,20 @@ public class ProductController {
                 .map(ProductModel::new)
                 .toList();
 
-        CollectionModel<ProductModel> response = CollectionModel.of(productModels);
+        Map<String, Object> links = new LinkedHashMap<>();
+        links.put("self", Map.of("href", "/api/products?page=" + page + "&size=" + size));
+        links.put("profile", Map.of("href", "/swagger-ui/index.html"));
 
-        // self 링크
-        response.add(Link.of("/api/products?page=" + page + "&size=" + size).withSelfRel());
-        response.add(Link.of("/swagger-ui/index.html").withRel("profile"));
-
-        // next 링크
         if (products.hasNext()) {
-            response.add(Link.of("/api/products?page=" + (page + 1) + "&size=" + size).withRel("next"));
+            links.put("next", Map.of("href", "/api/products?page=" + (page + 1) + "&size=" + size));
+        }
+        if (products.hasPrevious()) {
+            links.put("prev", Map.of("href", "/api/products?page=" + (page - 1) + "&size=" + size));
         }
 
-        // prev 링크
-        if (products.hasPrevious()) {
-            response.add(Link.of("/api/products?page=" + (page - 1) + "&size=" + size).withRel("prev"));
-        }
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("products", productModels);
+        response.put("_links", links);
 
         return ResponseEntity.ok(response);
     }
