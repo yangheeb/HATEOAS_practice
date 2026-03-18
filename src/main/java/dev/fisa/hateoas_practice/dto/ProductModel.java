@@ -1,5 +1,6 @@
 package dev.fisa.hateoas_practice.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dev.fisa.hateoas_practice.controller.OrderController;
 import dev.fisa.hateoas_practice.controller.ProductController;
 import dev.fisa.hateoas_practice.model.Product;
@@ -11,6 +12,7 @@ import org.springframework.hateoas.RepresentationModel;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Getter
+@JsonIgnoreProperties("links")
 public class ProductModel extends RepresentationModel<ProductModel> {
 
     private final Long id;

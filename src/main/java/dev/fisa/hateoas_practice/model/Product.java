@@ -38,7 +38,7 @@ public class Product {
     private User user;
 
     // 주문
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 
     // 생성 메서드
@@ -58,7 +58,7 @@ public class Product {
     // 양방향 연관관계 편의 메서드
     public void setUser(User user) {
         this.user = user;
-        user.getProducts().add(this);
+//        user.getProducts().add(this);
     }
 
     // 재고 감소
