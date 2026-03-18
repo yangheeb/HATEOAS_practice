@@ -75,16 +75,15 @@ public class ProductService {
         return product;
     }
 
-    // 삭제 (권한 체크 포함)
-    public void delete(Long id, User user) {
-
+    // 삭제 - Product 반환하도록 변경 (컨트롤러에서 응답 바디로 사용)
+    public Product delete(Long id, User user) {
         Product product = getProduct(id);
 
-        // 권한 체크
         if (!product.getUser().getId().equals(user.getId())) {
             throw new IllegalArgumentException("삭제 권한 없음");
         }
 
         productRepository.delete(product);
+        return product;
     }
 }

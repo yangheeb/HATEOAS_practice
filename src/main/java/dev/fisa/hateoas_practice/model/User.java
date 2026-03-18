@@ -11,10 +11,11 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -23,12 +24,17 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    // 상품 등록
     @OneToMany(mappedBy = "user")
     private List<Product> products = new ArrayList<>();
 
-    // 주문
     @OneToMany(mappedBy = "user")
     private List<Order> orders = new ArrayList<>();
 
+    // 생성 메서드
+    public static User create(String username, String password) {
+        User user = new User();
+        user.username = username;
+        user.password = password;
+        return user;
+    }
 }

@@ -29,10 +29,17 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    // 주문 조회
+    // 주문 조회 - 본인 주문만 조회 가능
     @Transactional(readOnly = true)
-    public Order getOrder(Long id) {
-        return orderRepository.findById(id)
+    public Order getOrder(Long id, User user) {
+        Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("주문 없음"));
+
+        // 403 체크
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("조회 권한 없음");
+        }
+
+        return order;
     }
 }
